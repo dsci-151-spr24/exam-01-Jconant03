@@ -167,6 +167,26 @@ The main data is in the `flights` data frame, but there are additional data sets
   ***The mean temperature was 43 at JFK on January 9th which had the highest departure delays with 1301. I achieved this answer by first using code to find the day with the highest departure delays, then following it up with only extracting specific information out of that day. Next I collected the information for the temperature throughout the day, and then combined the information for the final result***
 5.  **Question 5 (15 points)** - Consider breaking the day into four time intervals: 12:01am-6am, 6:01am-12pm, 12:01pm-6pm, 6:01pm-12am.
 
+```{r}
+flights_with_intervals <- flights %>%
+  mutate(time_interval = case_when(
+    hour >= 0 & hour <= 6 ~ "12:01am-6am",   
+    hour >= 6 & hour <= 12 ~ "6:01am-12pm",   
+    hour >= 12 & hour <= 18 ~ "12:01pm-6pm",  
+    hour >= 18 & hour <= 23 ~ "6:01pm-12am"
+  ))
+
+proportion_delayed <- flights_with_intervals %>%
+  filter(!is.na(dep_delay)) %>%  
+  group_by(time_interval) %>%    
+  summarise(
+    total_flights = n(),         
+    delayed_flights = sum(dep_delay > 0),  
+    proportion_delayed = delayed_flights / total_flights  
+  )
+proportion_delayed
+```
+***It appears that the majority of flights are delayed around the middle of the day to the beginning of evening from the time interval of 12:01 pm - 6 pm. My process for this question was to first create a column for the time intervals and then calculate the proportion of delayed flights secondly.***
     a\.
     Calculate the proportion of flights that are delayed at departure at each of these time intervals.
 
