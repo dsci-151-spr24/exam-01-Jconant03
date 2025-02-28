@@ -143,7 +143,28 @@ The main data is in the `flights` data frame, but there are additional data sets
   
 4.  **Question 4 (10 points)** - What was the mean temperature at the origin airport on the day with the highest departure delay?
     Your answer should include the name of origin airport, the date with the highest departure delay, and the mean temperature on that day.
-
+    
+    ```{r}
+    highest_dep_delay_day <- flights %>%
+  filter(!is.na(dep_delay)) %>%  
+  arrange(desc(dep_delay)) %>%  
+  slice(1)      
+    
+    highest_dep_delay_day_info <- highest_dep_delay_day %>%
+  select(origin, year, month, day, dep_delay)
+    
+    weather_info <- weather %>%
+  filter(year == highest_dep_delay_day_info$year & 
+           month == highest_dep_delay_day_info$month & 
+           day == highest_dep_delay_day_info$day & 
+           origin == highest_dep_delay_day_info$origin) %>%
+  summarise(mean_temperature = mean(temp, na.rm = TRUE))
+    
+    final_result <- cbind(highest_dep_delay_day_info, weather_info)
+    
+    final_result
+    ```
+  ***The mean temperature was 43 at JFK on January 9th which had the highest departure delays with 1301. I achieved this answer by first using code to find the day with the highest departure delays, then following it up with only extracting specific information out of that day. Next I collected the information for the temperature throughout the day, and then combined the information for the final result***
 5.  **Question 5 (15 points)** - Consider breaking the day into four time intervals: 12:01am-6am, 6:01am-12pm, 12:01pm-6pm, 6:01pm-12am.
 
     a\.
