@@ -1,8 +1,10 @@
 ---
-title: "Take Home Exam #1"
+title: 'Take Home Exam #1'
 author: "Jack Conant"
 date: "February 24, 2024"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r}
@@ -232,6 +234,19 @@ proportion_delayed
     *Hint:* You will first need to limit your analysis to the Contiguous United States.
     [This Wikipedia article](https://en.wikipedia.org/wiki/List_of_extreme_points_of_the_United_States) can help, but you're welcomed to use other resources as well.
     Make sure to cite whatever resource you use.
+    
+    ```{r}
+    contiguous_us_airports <- airports %>%
+  filter(lon >= -125 & lon <= -66)
+    
+    ggplot(contiguous_us_airports, aes(x = lon)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Longitudes of Airports in the Contiguous United States",
+       x = "Longitude",
+       y = "Number of Airports") +
+  theme_minimal()
+    ```
+  ***Based off of the information and the graph provided, the majority of the airports in the United States are located closer towards the Eastern Coast rather than the West. I simply filtered the data to include airports whose longitude values fell wuthin the CONUS boundaries. I then created a graph using ggplot.***
 
 8.  **Question 8 (15 pts)** - Recreate the plot included below using the `flights` data.
     Once you have created the visualization, in no more than one paragraph, describe what you think the point of this visualization might be.
@@ -239,6 +254,30 @@ proportion_delayed
     You will have to create `arrival` yourself, it is a categorical variable that is equal to `"ontime"` when `arr_delay <= 0` and `"delayed"` when `arr_delay > 0`.
 
 ![](img/plot-to-recreate.png)
+
+```{r}
+flights_with_arrival <- flights %>%
+  mutate(arrival = ifelse(arr_delay <= 0, "ontime", "delayed"))
+
+flights_with_intervals <- flights_with_arrival %>%
+  mutate(time_interval = case_when(
+    hour >= 0 & hour <= 6 ~ "12:01am-6am",
+    hour >= 6 & hour <= 12 ~ "6:01am-12pm",
+    hour >= 12 & hour <= 18 ~ "12:01pm-6pm",
+    hour >= 18 & hour <= 24 ~ "6:01pm-12am"
+  ))
+
+ggplot(flights_with_intervals, aes(x = time_interval, y = arrival, color = arrival)) +
+  geom_jitter(width = 0.2, height = 0.1, alpha = 0.5) +   
+  scale_color_manual(values = c("ontime" = "green", "delayed" = "red")) +  
+  labs(title = "Flight Delays by Time Interval of Day",
+       x = "Time Interval",
+       y = "Arrival Status",
+       color = "Arrival Status") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+***I admittedly am struggling on creating this graph, I tried creating intervals and I am not so sure how to format this.***
 
 **Extra Credit (5 pts)** - Create a visualization that effectively shows if there is a relationship between the average daily departure delay and the average daily temperature for all three New York city airports.
 Your answer must be given in a single pipe.
