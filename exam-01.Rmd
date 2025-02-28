@@ -197,12 +197,32 @@ proportion_delayed
 
     a\.
     How long is this flight?
+    
+    ```{r}
+    longest_air_time_flight <- flights %>%
+  filter(!is.na(air_time)) %>% 
+  arrange(desc(air_time)) %>%    
+  slice(1)
+    
+    longest_air_time_flight
+    ```
+   ***This is the data for the flight with the longest air time. I did this by simply filtering out data with missing air time and then arranging the flights in descending order in regards for air time. Then adding slice(1) to simply get the longest flight.***
+    
 
     b\.
     What city did it fly to?
+  ***The plane flew to Honolulu***
 
     c\.
     How many seats does the plane that flew this flight have?
+    ```{r}
+    plane_info <- planes %>%
+  filter(tailnum == longest_air_time_flight$tailnum) %>%
+  select(seats)
+    number_of_seats <- plane_info$seats
+    cat(number_of_seats)
+    ```
+  ***The number of seats on the flight was 292. I got this data by joining the plane dataset to filter for seats.***
 
 7.  **Question 7 (15 pts)** - The `airports` data frame contains information on a large number of primarily American airports.
     These data include location information for these airports in the form of latitude and longitude coordinates.
